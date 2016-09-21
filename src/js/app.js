@@ -42,6 +42,7 @@ state.setState({
 state.setState({
 	pos: {
 		x:2,
-		y:2
+		y:2,
+		z:0
 	}
 });
