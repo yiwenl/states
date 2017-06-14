@@ -1,61 +1,91 @@
 // State.js
 
 import alfrid from 'alfrid';
+import Attribute from './Attribute';
+
+
+const isObject = function(o) {
+	return typeof o === 'object' && !Array.isArray(o) && o.length === undefined;
+}
 
 class State extends alfrid.EventDispatcher {
 	constructor(mInitState = {}) {
 		super();
 
-		this._state = {...mInitState};
-		console.log('Init State :', this._state);
+		this._state = {};
+
+		for ( let s in mInitState ) {
+			if(!isObject(mInitState[s])) {
+				this[s] = new Attribute(s, mInitState[s])	
+			} else {
+				this[s] = new State(mInitState[s]);
+			}
+			
+		}
+
+		this._changeBinds = [];
+		this._addBinds = [];
+	}
+
+
+	onChange(mCb) {
+		this._changeBinds.push(mCb);
+	}
+
+
+	onAdd(mCb) {
+		this._addBinds.push(mCb);
 	}
 
 
 	setState(mNewState) {
-		function isObject(mObj) {	return (typeof mObj === 'object');	}
+		let hasChanged = false;
+		let hasNewState = false;
+		let stateChanged = {};
+		let stateAdded = {};
 
-		const checkState = (newState, oldState) => {
-			let hasChanged = false;
-			let changed = {};
-			let added = {};
+		for ( let s in mNewState ) {
 
-			for (let s in newState) {
-				if(newState[s] !== undefined) {
-					if(!oldState[s]) {	//	Add new attributes
-						hasChanged = true;
-						added[s] = newState[s];
-						changed[s] = newState[s];
-						oldState[s] = newState[s];
-					} else {	//	Modify old attributes
+			if (this[s] === undefined) {
+				console.log('Add Attribute : ', s);
+				if(!isObject(mNewState[s])) {
+					this[s] = new Attribute(s, mNewState[s])	
+				} else {
+					this[s] = new State(mNewState[s]);
+				}
 
-						if(isObject(newState[s])) { //	attribute is an object, need to go deeper
-							const o = checkState(newState[s], oldState[s]);
-							hasChanged = hasChanged || o.hasChanged;
-							added = Object.assign(added, o.added);
-							changed = Object.assign(changed, o.changed);
-						} else {
-							if(newState[s] !== oldState[s]) {//	attributes has changed
-								hasChanged = true;
-								changed[s] = newState[s];
-								oldState[s] = newState[s];
-							}	
-						}
+				hasNewState = true;
+				stateAdded[s] = mNewState[s];
+
+			} else {
+				if (!isObject(mNewState[s])) {
+					const attrChanged = this[s].setValue(mNewState[s]);
+					hasChanged = hasChanged || attrChanged;
+					if (attrChanged) {
+						stateChanged[s] = mNewState[s];
+					}
+				} else {
+					const attrChanged = this[s].setState(mNewState[s]);
+					if (attrChanged) {
+						stateChanged[s] = mNewState[s];
 					}
 				}
 			}
-
-			return {
-				hasChanged,
-				changed,
-				added
-			};
 		}
 
-		const o = checkState(mNewState, this._state);
-
-		if(o.hasChanged) {
-			this.trigger('onChanged', o);
+		if (hasChanged) {
+			this._changeBinds.forEach( cb => {
+				cb(stateChanged);
+			});
 		}
+
+		if (hasNewState) {
+			this._addBinds.forEach( cb => {
+				cb(stateAdded);
+			});	
+		}
+
+		return hasChanged;
 	}
 
 
