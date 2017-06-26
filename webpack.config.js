@@ -5,6 +5,7 @@ const isDevelopment     = process.env.NODE_ENV === 'development';
 const prod 				= !isDevelopment;
 const ip                = require('ip');
 const serverIp          = ip.address();
+const libraryName		= 'State';
 
 function getOutput() {
 	if(prod) {
@@ -44,7 +45,10 @@ module.exports = {
 	},
 	output: {
 		path: getOutput(),
-		filename: prod ? 'State.js' : 'bundle.js',
+		filename: prod ? `${libraryName}.js` : 'bundle.js',
+		library: libraryName,
+		libraryTarget: 'umd',
+		umdNamedDefine: true,
 		publicPath: 'http://localhost:8081/',
 	},
 	module: {
