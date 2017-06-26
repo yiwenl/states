@@ -6,7 +6,7 @@ npm install object-states
 
 
 ## Usage 
-`
+```
 import State from 'object-states';
 
 const state = new State({
@@ -45,5 +45,5 @@ state.setState({
 	}
 });
 
-`
+```
 
