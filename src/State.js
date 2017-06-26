@@ -1,22 +1,19 @@
 // State.js
 
-import alfrid from 'alfrid';
+import { EventEmitter } from 'events';
 import Attribute from './Attribute';
 
+const isObject = o => typeof o === 'object' && !Array.isArray(o) && o.length === undefined;
 
-const isObject = function(o) {
-	return typeof o === 'object' && !Array.isArray(o) && o.length === undefined;
-}
-
-class State extends alfrid.EventDispatcher {
+class State extends EventEmitter {
 	constructor(mInitState = {}) {
 		super();
 
 		this._state = {};
 
-		for ( let s in mInitState ) {
+		for (const s in mInitState) {
 			if(!isObject(mInitState[s])) {
-				this[s] = new Attribute(s, mInitState[s])	
+				this[s] = new Attribute(s, mInitState[s]);	
 			} else {
 				this[s] = new State(mInitState[s]);
 			}
@@ -41,15 +38,14 @@ class State extends alfrid.EventDispatcher {
 	setState(mNewState) {
 		let hasChanged = false;
 		let hasNewState = false;
-		let stateChanged = {};
-		let stateAdded = {};
+		const stateChanged = {};
+		const stateAdded = {};
 
-		for ( let s in mNewState ) {
+		for (const s in mNewState) {
 
 			if (this[s] === undefined) {
-				console.log('Add Attribute : ', s);
 				if(!isObject(mNewState[s])) {
-					this[s] = new Attribute(s, mNewState[s])	
+					this[s] = new Attribute(s, mNewState[s]);	
 				} else {
 					this[s] = new State(mNewState[s]);
 				}
@@ -74,15 +70,19 @@ class State extends alfrid.EventDispatcher {
 		}
 
 		if (hasChanged) {
-			this._changeBinds.forEach( cb => {
+			this._changeBinds.forEach(cb => {
 				cb(stateChanged);
 			});
+
+			this.emit('changed', stateChanged);
 		}
 
 		if (hasNewState) {
-			this._addBinds.forEach( cb => {
+			this._addBinds.forEach(cb => {
 				cb(stateAdded);
 			});	
+
+			this.emit('added', stateAdded);
 		}
 
 		return hasChanged;

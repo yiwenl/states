@@ -1,11 +1,12 @@
 // Attribute.js
 
-const equals = (a1, a2) => {
-	return a1.length==a2.length && a1.every((v,i)=> v === a2[i]);
-}
+import { EventEmitter } from 'events';
 
-class Attribute {
+const equals = (a1, a2) => a1.length == a2.length && a1.every((v, i)=> v === a2[i]);
+
+class Attribute extends EventEmitter {
 	constructor(mName, mValue) {
+		super();
 		
 		this._value  = mValue;
 		this._name = mName;
@@ -30,9 +31,11 @@ class Attribute {
 		if(hasChanged) {
 			this._value = mValue;
 
-			this._changeBinds.forEach( cb => {
+			this._changeBinds.forEach(cb => {
 				cb(this._value);
 			});
+
+			this.emit('changed', this._value);
 		}
 
 		return hasChanged;

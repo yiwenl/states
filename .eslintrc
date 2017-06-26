@@ -247,7 +247,6 @@
     'no-restricted-syntax': [
       2,
       'DebuggerStatement',
-      'ForInStatement',
       'LabeledStatement',
       'WithStatement',
     ],
