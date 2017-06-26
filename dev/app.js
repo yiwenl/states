@@ -1,6 +1,4 @@
 import State from '../src/State';
-// import State from '../build/State';
-
 import { vec3, mat4 } from 'gl-matrix';
 
 const oState = {
@@ -16,7 +14,7 @@ const oState = {
 	dir:vec3.create(),
 	mtx:mat4.create()
 }
-const state = new State(oState);
+const state0 = new State(oState);
 
 // state.on('changed', (o)=> {
 // 	console.log('From Event listener, Changed : ', o);
@@ -41,11 +39,11 @@ const state = new State(oState);
 
 
 
-state.ary.onChange( mValue => {
+state0.ary.onChange( mValue => {
 	console.log('new Ary value :', mValue);
 });
 
-state.x.on('changed', value => {
+state0.x.on('changed', value => {
 	console.log('New x value:', value);
 });
 
@@ -62,63 +60,50 @@ state.x.on('changed', value => {
 // });
 
 
-state.setState({
-	x:5,
-	ary:[0, 1, 3],
-	name:'test',
-	dir:vec3.fromValues(0, 0, 10),
-	pos:{
+// state0.setState({
+// 	x:5,
+// 	ary:[0, 1, 3],
+// 	name:'test',
+// 	dir:vec3.fromValues(0, 0, 10),
+// 	pos:{
+// 		x:0,
+// 		w:1
+// 	}
+// });
+
+
+const state = new State({
+	name:'John',
+	position:{
 		x:0,
-		w:1
+		y:0,
+		z:0
 	}
 });
 
 
-// state.pos.setState({
-// 	y:500,
-// 	z:-100
-// });
-
-// state.setState({
-// 	pos: {
-// 		x:10,
-// 		y:10
-// 	}
-// });
-
-// state.setState({
-// 	pos: {
-// 		x:2,
-// 		y:2
-// 	}
-// });
-
-// state.setState({
-// 	pos: {
-// 		x:1,
-// 		y:2
-// 	}
-// });
-
-
-/*
-
-state.x.onChange(()=> {
-	
+state.onChange( mValue => {
+	console.log('Changed :', mValue);
 });
 
-state.pos.onChange((o)=> {
-	console.log(o);
+state.name.on('changed', mValue => {
+	console.log('From listener, Name changed:', mValue)
 });
 
-*/
+state.position.on('added', mAdded => {
+	console.log('Added :', mAdded);
+});
 
-// console.log(state.getState());
+state.position.on('changed', mChanged => {
+	console.log('Changed value :', mChanged);
+});
 
 
-/*
-
-
-state.x.on('change')
-
-*/
+state.setState({
+	name:'Peter',
+	position: {
+		x:1,
+		y:1,
+		w:1
+	}
+});

@@ -1,8 +1,8 @@
 {
-  "name": "webpack-boilerplate",
-  "version": "1.0.1",
+  "name": "object-states",
+  "version": "0.0.1",
   "description": "A simple state object",
-  "main": "build/scheduler.js",
+  "main": "build/State.js",
   "scripts": {
     "lint": "eslint -c .eslintrc src/**",
     "lint:fix": "eslint -c .eslintrc --fix src/**",
@@ -11,10 +11,20 @@
     "build:lib": "NODE_ENV=production webpack --progress --colors --error-details",
     "build": "webpack --progress --colors; babel src --out-dir build"
   },
-  "repository": {},
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yiwenl/States.git"
+  },
+  "keywords": [
+    "states",
+    "object"
+  ],
   "author": "Yi-Wen Lin",
-  "license": "ISC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yiwenl/States/issues"
+  },
+  "homepage": "https://github.com/yiwenl/States#readme",
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-cli": "^6.6.5",
